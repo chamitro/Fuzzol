@@ -1,0 +1,2 @@
+contract X {}
+contract X {}

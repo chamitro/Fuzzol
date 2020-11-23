@@ -1,0 +1,3 @@
+library C {
+    fallback() external {}
+}

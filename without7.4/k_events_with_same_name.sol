@@ -1,0 +1,2 @@
+contract TestIt {
+    event A();

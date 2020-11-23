@@ -1,0 +1,2 @@
+contract C {
+    address a;

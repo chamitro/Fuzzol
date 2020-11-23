@@ -1,0 +1,3 @@
+library L {
+}
+contract C {
