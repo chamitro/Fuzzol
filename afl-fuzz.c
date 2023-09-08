@@ -5144,7 +5144,7 @@ static int use_mutation_tool(u8 **out_buf, s32* temp_len) {
     pos = UR((*temp_len) - 1);
     int choice = UR(101);
     switch (choice) {
-    case 0: /* Semantic statement deletion */
+    case 0: /* Operator, Statement and Data Type Change */
       strncpy(original, "\n", MAX_MUTANT_CHANGE);
       strncpy(replacement, "\nif (0==1)\n", MAX_MUTANT_CHANGE);
       break;
@@ -5319,7 +5319,7 @@ static int use_mutation_tool(u8 **out_buf, s32* temp_len) {
       strncpy(original, "!", MAX_MUTANT_CHANGE);
       strncpy(replacement, "", MAX_MUTANT_CHANGE);
       break;
-    case 44: /* Remove a semicolon delimited statement after a semicolon */
+    case 44: /* AST Leaf Node Change */
       delim_replace(out_buf, temp_len, &original, &replacement, pos, ";", ";", ";");
       break;
     case 45: /* Remove a semicolon delimited statement after a left curly brace */
@@ -5480,11 +5480,11 @@ static int use_mutation_tool(u8 **out_buf, s32* temp_len) {
       strncpy(original, "_KeyType", MAX_MUTANT_CHANGE);
       strncpy(replacement, "_ValueType", MAX_MUTANT_CHANGE);
       break;
-		case 90:
-      strncpy(original, "delete", MAX_MUTANT_CHANGE);
-      strncpy(replacement, "delete a", MAX_MUTANT_CHANGE);
+		case 90: /* Inline Assembly */
+      strncpy(original, "assembly", MAX_MUTANT_CHANGE);
+      strncpy(replacement, "{", MAX_MUTANT_CHANGE);
       break;
-		case 91: /* Delete left most chars */
+		case 91:
       delim_delete(out_buf, temp_len, &original, &replacement, pos, "(", " ", ")");
       break;
 		case 92: /* Duplicate a single line of code */
@@ -6712,15 +6712,15 @@ skip_extras:
 
 tree_stage:
 
-  stage_name  = "tree";
-  stage_short = "tree";
+  stage_name  = "ast_tree";
+  stage_short = "ast_tree";
 
   struct queue_entry* target;
   u32 tid;
   u8* new_buf;
 
 retry_external_pick:
-  // Pick a random other queue entry for passing to external API 
+  // Pick a random AST Leaf 
   do { tid = UR(queued_paths); } while (tid == current_entry && queued_paths > 1);
 
   target = queue;

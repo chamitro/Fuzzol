@@ -72,11 +72,11 @@ afl-as: afl-as.c afl-as.h $(COMM_HDR) | test_x86
 afl-fuzz: afl-fuzz.c $(COMM_HDR) | test_x86
 	$(CC) $(CFLAGS) $@.c -o $@ $(LDFLAGS) ./tree_mutation/solidity_parser/libTreeMutation.so
 
-my-superion-mini: afl-fuzz.c $(COMM_HDR) | test_x86
-	$(CC) $(CFLAGS) afl-fuzz-superion-mygrammar-fast-bitbyteflips-nohavoc.c -o $@ $(LDFLAGS) ./tree_mutation/solidity_parser/libTreeMutation.so
+# my-superion-mini: afl-fuzz.c $(COMM_HDR) | test_x86
+# 	$(CC) $(CFLAGS) afl-fuzz-superion-mygrammar-fast-bitbyteflips-nohavoc.c -o $@ $(LDFLAGS) ./tree_mutation/solidity_parser/libTreeMutation.so
 
-my-afl-fuzz2: afl-fuzz.c $(COMM_HDR) | test_x86
-	$(CC) $(CFLAGS) afl-fuzz.c -o $@ $(LDFLAGS) -DAFL_USE_MUTATION_TOOL -DP_MUTATION_TOOL=48 ./tree_mutation/solidity_parser/libTreeMutation.so
+# afl-fuzz-compiler: afl-fuzz.c $(COMM_HDR) | test_x86
+# 	$(CC) $(CFLAGS) afl-fuzz.c -o $@ $(LDFLAGS) -DAFL_USE_MUTATION_TOOL -DP_MUTATION_TOOL=48 ./tree_mutation/solidity_parser/libTreeMutation.so
 
 afl-showmap: afl-showmap.c $(COMM_HDR) | test_x86
 	$(CC) $(CFLAGS) $@.c -o $@ $(LDFLAGS)
