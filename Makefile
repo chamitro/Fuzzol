@@ -24,7 +24,7 @@ MISC_PATH   = $(PREFIX)/share/afl
 
 # PROGS intentionally omit afl-as, which gets installed elsewhere.
 
-PROGS       = afl-gcc afl-fuzz my-superion-mini my-afl-fuzz2 afl-showmap afl-tmin afl-gotcpu afl-analyze
+PROGS       = afl-gcc afl-fuzz myfuzzer my-afl-fuzz2 afl-showmap afl-tmin afl-gotcpu afl-analyze
 SH_PROGS    = afl-plot afl-cmin afl-whatsup
 
 CFLAGS     ?= -O3 -funroll-loops
@@ -72,7 +72,7 @@ afl-as: afl-as.c afl-as.h $(COMM_HDR) | test_x86
 afl-fuzz: afl-fuzz.c $(COMM_HDR) | test_x86
 	$(CC) $(CFLAGS) $@.c -o $@ $(LDFLAGS) ./tree_mutation/solidity_parser/libTreeMutation.so
 
-my-superion-mini: afl-fuzz.c $(COMM_HDR) | test_x86
+myfuzzer: afl-fuzz.c $(COMM_HDR) | test_x86
 	$(CC) $(CFLAGS) afl-fuzz-superion-mygrammar-fast-bitbyteflips-nohavoc.c -o $@ $(LDFLAGS) ./tree_mutation/solidity_parser/libTreeMutation.so
 
 my-afl-fuzz2: afl-fuzz.c $(COMM_HDR) | test_x86
