@@ -217,8 +217,8 @@ static s32 cpu_core_count;            /* CPU core count                   */
 
 #ifdef HAVE_AFFINITY
 
-static s32 cpu_aff = -1;       	      /* Selected CPU core                */
-static s32 cpu_a = -1;       	      /* Selected CPU core                */
+static s32 cpu_aff = -1;              /* Selected CPU core                */
+static s32 cpu_a = -1;              /* Selected CPU core                */
 #endif /* HAVE_AFFINITY */
 
 static FILE* plot_file;               /* Gnuplot output file              */
@@ -238,13 +238,13 @@ struct queue_entry {
       fs_redundant;                   /* Marked as redundant in the fs?   */
 
   u32 bitmap_size,                    /* Number of bits set in bitmap     */
-			fuzz_level,
+      fuzz_level,
       exec_cksum;                     /* Checksum of the execution trace  */
 
   u64 exec_us,                        /* Execution time (us)              */
       handicap,                       /* Number of queue cycles behind    */
       depth,                          /* Path depth                       */
-			n_fuzz;													/* Number of fuzz, does not overflow */
+      n_fuzz;                         /* Number of fuzz, does not overflow */
 
   u8* trace_mini;                     /* Trace bytes, if kept             */
   u32 tc_ref;                         /* Trace bytes ref count            */
@@ -501,7 +501,7 @@ static void bind_to_free_cpu(void) {
   }
 
   OKF("Found a free CPU core, binding to #%u.", i);
-  if(cpu_a!=-1)i=cpu_a;	
+  if(cpu_a!=-1)i=cpu_a; 
   cpu_aff = i;
 
   CPU_ZERO(&c);
@@ -790,7 +790,7 @@ static void add_to_queue(u8* fname, u32 len, u8 passed_det) {
   q->len          = len;
   q->depth        = cur_depth + 1;
   q->passed_det   = passed_det;
-	q->n_fuzz       = 1;
+  q->n_fuzz       = 1;
 
   if (q->depth > max_depth) max_depth = q->depth;
 
@@ -3137,7 +3137,7 @@ static u8 save_if_interesting(char** argv, void* mem, u32 len, u8 fault) {
   s32 fd;
   u8  keeping = 0, res;
 
-	 /* Update path frequency. */
+   /* Update path frequency. */
   u32 cksum = hash32(trace_bits, MAP_SIZE, HASH_CONST);
 
   struct queue_entry* q = queue;
@@ -4768,42 +4768,42 @@ static u32 calculate_score(struct queue_entry* q) {
   }
 
 //COE
-/*	u64 fuzz_total = 0;*/
+/*  u64 fuzz_total = 0;*/
 /*  u32 n_paths = 0;*/
-/*	u32 factor = 1;*/
+/*  u32 factor = 1;*/
 
-/*	struct queue_entry *queue_it = queue;	*/
-/*	while (queue_it) {*/
-/*  	fuzz_total += queue_it->n_fuzz;*/
-/*  	n_paths ++;*/
-/*  	queue_it = queue_it->next;*/
+/*  struct queue_entry *queue_it = queue; */
+/*  while (queue_it) {*/
+/*    fuzz_total += queue_it->n_fuzz;*/
+/*    n_paths ++;*/
+/*    queue_it = queue_it->next;*/
 /*  }*/
 
 /*  u32 fuzz_mu = fuzz_total / n_paths;*/
 /*  if (fuzz <= fuzz_mu) {*/
-/*  	if (q->fuzz_level < 16)*/
-/*    	factor = ((u32) (1 << q->fuzz_level));*/
+/*    if (q->fuzz_level < 16)*/
+/*      factor = ((u32) (1 << q->fuzz_level));*/
 /*    else */
-/*    	factor = MAX_FACTOR;*/
+/*      factor = MAX_FACTOR;*/
 /*  } else {*/
-/*  	factor = 0;*/
+/*    factor = 0;*/
 /*  }*/
 ///////////////
 
 //FAST
-	u64 fuzz = q->n_fuzz;
+  u64 fuzz = q->n_fuzz;
   u64 fuzz_total;
 
   u32 n_paths, fuzz_mu;
   u32 factor = 1;
 
-	if (q->fuzz_level < 16) {
-  	factor = ((u32) (1 << q->fuzz_level)) / (fuzz == 0 ? 1 : fuzz); 
+  if (q->fuzz_level < 16) {
+    factor = ((u32) (1 << q->fuzz_level)) / (fuzz == 0 ? 1 : fuzz); 
   } else {
-  	factor = MAX_FACTOR / (fuzz == 0 ? 1 : next_p2 (fuzz));
-	}
+    factor = MAX_FACTOR / (fuzz == 0 ? 1 : next_p2 (fuzz));
+  }
 
-	if (factor > MAX_FACTOR) 
+  if (factor > MAX_FACTOR) 
     factor = MAX_FACTOR;
 
   perf_score *= factor / POWER_BETA;
@@ -5011,80 +5011,80 @@ static u8 could_be_interest(u32 old_val, u32 new_val, u8 blen, u8 check_le) {
 
 char *strnstr(const char *s, const char *find, size_t slen)
 {
-	char c, sc;
-	size_t len;
+  char c, sc;
+  size_t len;
 
-	if ((c = *find++) != '\0') {
-		len = strlen(find);
-		do {
-			do {
-				if (slen-- < 1 || (sc = *s++) == '\0')
-					return (NULL);
-			} while (sc != c);
-			if (len > slen)
-				return (NULL);
-		} while (strncmp(s, find, len) != 0);
-		s--;
-	}
-	return ((char *)s);
+  if ((c = *find++) != '\0') {
+    len = strlen(find);
+    do {
+      do {
+        if (slen-- < 1 || (sc = *s++) == '\0')
+          return (NULL);
+      } while (sc != c);
+      if (len > slen)
+        return (NULL);
+    } while (strncmp(s, find, len) != 0);
+    s--;
+  }
+  return ((char *)s);
 }
 
 #define MAX_MUTANT_CHANGE 1024
 #define MAX_MUTANT_TRIES 16
 
 static void delim_replace(u8 **out_buf, s32* temp_len, char **original, char**replacement,
-			 size_t pos, const char* ldelim, const char* rdelim, const char* rep) {
+       size_t pos, const char* ldelim, const char* rdelim, const char* rep) {
   /* if rep == NULL,  then we will duplicate the target */
   char* ldelim_start = strnstr(*out_buf + pos, ldelim, *temp_len - pos);
   if (ldelim_start != NULL) {
     if ((ldelim_start - (char*)*out_buf) < (*temp_len - 2)) {
       char* rdelim_end = strnstr(ldelim_start + 1, rdelim, MAX_MUTANT_CHANGE);
       if (rdelim_end != NULL) {
-				int original_pos = 0;	
-				for (char* cpos = ldelim_start; (cpos <= rdelim_end) && (original_pos < MAX_MUTANT_CHANGE);
-	     		cpos++) {
-	  			(*original)[original_pos++] = *cpos;
-				}
-				(*original)[original_pos] = 0;
-				if (rep != NULL) {
-	  			strncpy(*replacement, rep, MAX_MUTANT_CHANGE);
-				} else {
-	  			strncpy(*replacement, *original, MAX_MUTANT_CHANGE);
-				}
+        int original_pos = 0; 
+        for (char* cpos = ldelim_start; (cpos <= rdelim_end) && (original_pos < MAX_MUTANT_CHANGE);
+          cpos++) {
+          (*original)[original_pos++] = *cpos;
+        }
+        (*original)[original_pos] = 0;
+        if (rep != NULL) {
+          strncpy(*replacement, rep, MAX_MUTANT_CHANGE);
+        } else {
+          strncpy(*replacement, *original, MAX_MUTANT_CHANGE);
+        }
       }
-		}
+    }
   }
 }
 
 static void delim_swap(u8 **out_buf, s32* temp_len, char **original, char**replacement,
-		       size_t pos, const char* ldelim, const char* mdelim, const char* rdelim) {
+           size_t pos, const char* ldelim, const char* mdelim, const char* rdelim) {
   char* ldelim_start = strnstr(*out_buf + pos, ldelim, *temp_len - pos);
   if (ldelim_start != NULL) {
     if ((ldelim_start - (char*)*out_buf) < (*temp_len - 2)) {
       char* mdelim_end = strnstr(ldelim_start + 1, mdelim, MAX_MUTANT_CHANGE);
       if (mdelim_end != NULL) {
-				char* rdelim_end = strnstr(mdelim_end+ 1, rdelim,
-				MAX_MUTANT_CHANGE - (mdelim_end - ldelim_start));
-				if (rdelim_end != NULL) {
-	  			int original_pos = 0;
-	  			for (char* cpos = ldelim_start + 1; (cpos <= rdelim_end) && (original_pos < MAX_MUTANT_CHANGE);
-	       		cpos++) {
-	    			(*original)[original_pos++] = *cpos;
-	  			}
-	  			(*original)[original_pos] = 0;
-	  			int replacement_pos = 0;
-	  			for (char* cpos = mdelim_end + 1; (cpos < rdelim_end) && (replacement_pos < MAX_MUTANT_CHANGE);
-	       		cpos++) {
-	    			(*replacement)[replacement_pos++] = *cpos;
-	  			}
-	  			(*replacement)[replacement_pos++] = mdelim[0];
-	  			for (char* cpos = ldelim_start + 1; (cpos < mdelim_end) && (replacement_pos < MAX_MUTANT_CHANGE);
-	       		cpos++) {
-	    			(*replacement)[replacement_pos++] = *cpos;
-	  			}
-	  			(*replacement)[replacement_pos++] = rdelim[0];
-	  			(*replacement)[replacement_pos] = 0;
-				}
+        char* rdelim_end = strnstr(mdelim_end+ 1, rdelim,
+        MAX_MUTANT_CHANGE - (mdelim_end - ldelim_start));
+        if (rdelim_end != NULL) {
+          int original_pos = 0;
+          for (char* cpos = ldelim_start + 1; (cpos <= rdelim_end) && (original_pos < MAX_MUTANT_CHANGE);
+            cpos++) {
+            (*original)[original_pos++] = *cpos;
+          }
+          (*original)[original_pos] = 0;
+          int replacement_pos = 0;
+          for (char* cpos = mdelim_end + 1; (cpos < rdelim_end) && (replacement_pos < MAX_MUTANT_CHANGE);
+            cpos++) {
+            (*replacement)[replacement_pos++] = *cpos;
+          }
+          (*replacement)[replacement_pos++] = mdelim[0];
+          for (char* cpos = ldelim_start + 1; (cpos < mdelim_end) && (replacement_pos < MAX_MUTANT_CHANGE);
+            cpos++) {
+            (*replacement)[replacement_pos++] = *cpos;
+          }
+          (*replacement)[replacement_pos++] = rdelim[0];
+          (*replacement)[replacement_pos] = 0;
+        }
       }
     }
   }
@@ -5092,35 +5092,35 @@ static void delim_swap(u8 **out_buf, s32* temp_len, char **original, char**repla
 
 
 static void delim_delete(u8 **out_buf, s32* temp_len, char **original, char**replacement,
-		       size_t pos, const char* ldelim, const char* mdelim, const char* rdelim) {
+           size_t pos, const char* ldelim, const char* mdelim, const char* rdelim) {
   char* ldelim_start = strnstr(*out_buf + pos, ldelim, *temp_len - pos);
   if (ldelim_start != NULL) {
     if ((ldelim_start - (char*)*out_buf) < (*temp_len - 2)) {
       char* mdelim_end = strnstr(ldelim_start + 1, mdelim, MAX_MUTANT_CHANGE);
       if (mdelim_end != NULL) {
-				char* rdelim_end = strnstr(mdelim_end+ 1, rdelim,
-				MAX_MUTANT_CHANGE - (mdelim_end - ldelim_start));
-				if (rdelim_end != NULL) {
-	  			int original_pos = 0;
-	  			for (char* cpos = ldelim_start + 1; (cpos <= rdelim_end) && (original_pos < MAX_MUTANT_CHANGE);
-	       		cpos++) {
-	    			(*original)[original_pos++] = *cpos;
-	  			}
-	  			(*original)[original_pos] = 0;
-	  			int replacement_pos = 0;
-/*	  			for (char* cpos = mdelim_end + 1; (cpos < rdelim_end) && (replacement_pos < MAX_MUTANT_CHANGE);*/
-/*	       		cpos++) {*/
-/*	    			(*replacement)[replacement_pos++] = *cpos;*/
-/*	  			}*/
+        char* rdelim_end = strnstr(mdelim_end+ 1, rdelim,
+        MAX_MUTANT_CHANGE - (mdelim_end - ldelim_start));
+        if (rdelim_end != NULL) {
+          int original_pos = 0;
+          for (char* cpos = ldelim_start + 1; (cpos <= rdelim_end) && (original_pos < MAX_MUTANT_CHANGE);
+            cpos++) {
+            (*original)[original_pos++] = *cpos;
+          }
+          (*original)[original_pos] = 0;
+          int replacement_pos = 0;
+/*          for (char* cpos = mdelim_end + 1; (cpos < rdelim_end) && (replacement_pos < MAX_MUTANT_CHANGE);*/
+/*            cpos++) {*/
+/*            (*replacement)[replacement_pos++] = *cpos;*/
+/*          }*/
 // We detele the left most char
-	  			(*replacement)[replacement_pos++] = mdelim[0];
-	  			for (char* cpos = ldelim_start + 1; (cpos < mdelim_end) && (replacement_pos < MAX_MUTANT_CHANGE);
-	       		cpos++) {
-	    			(*replacement)[replacement_pos++] = *cpos;
-	  			}
-	  			(*replacement)[replacement_pos++] = rdelim[0];
-	  			(*replacement)[replacement_pos] = 0;
-				}
+          (*replacement)[replacement_pos++] = mdelim[0];
+          for (char* cpos = ldelim_start + 1; (cpos < mdelim_end) && (replacement_pos < MAX_MUTANT_CHANGE);
+            cpos++) {
+            (*replacement)[replacement_pos++] = *cpos;
+          }
+          (*replacement)[replacement_pos++] = rdelim[0];
+          (*replacement)[replacement_pos] = 0;
+        }
       }
     }
   }
@@ -5370,7 +5370,7 @@ static int use_mutation_tool(u8 **out_buf, s32* temp_len) {
     case 60: /* Swap space delimited things case 3 */
       delim_swap(out_buf, temp_len, &original, &replacement, pos, "(", " ", " ");
       break;
-		case 61: /* Swap space delimited things case 3 */
+    case 61: /* Swap space delimited things case 3 */
       delim_swap(out_buf, temp_len, &original, &replacement, pos, "(", "0", " ");
       break;
     case 62: /* Swap space delimited things case 4 */
@@ -5382,139 +5382,139 @@ static int use_mutation_tool(u8 **out_buf, s32* temp_len) {
     case 64: /* Duplicate a construct (most often, a non-nested for loop */
       delim_replace(out_buf, temp_len, &original, &replacement, pos, "\n", "}", NULL);
       break; 
-		case 65: /* Semantic statement deletion */
+    case 65: /* Semantic statement deletion */
       strncpy(original, "\n", MAX_MUTANT_CHANGE);
       strncpy(replacement, "\nif (0==1){}\n", MAX_MUTANT_CHANGE);
       break;       
-		case 66:
+    case 66:
       strncpy(original, "balance", MAX_MUTANT_CHANGE);
       strncpy(replacement, "transfer", MAX_MUTANT_CHANGE);
       break; 
-		case 67:
+    case 67:
       strncpy(original, "return", MAX_MUTANT_CHANGE);
       strncpy(replacement, "pure return", MAX_MUTANT_CHANGE);
       break;
-		case 68:
+    case 68:
       strncpy(original, "for", MAX_MUTANT_CHANGE);
       strncpy(replacement, "for(1==1)", MAX_MUTANT_CHANGE);
-			break;
-		case 69:
+      break;
+    case 69:
       strncpy(original, "for", MAX_MUTANT_CHANGE);
       strncpy(replacement, "while", MAX_MUTANT_CHANGE);
-			break;
-		case 70: /* change if conditions */
+      break;
+    case 70: /* change if conditions */
       delim_swap(out_buf, temp_len, &original, &replacement, pos, "if", "?", ":");
       break;
-		case 71: /*change variables types */
+    case 71: /*change variables types */
       strncpy(original, "uint256", MAX_MUTANT_CHANGE);
       strncpy(replacement, "uint8", MAX_MUTANT_CHANGE);
-			break;
-		case 72: /*change variables types */
+      break;
+    case 72: /*change variables types */
       strncpy(original, "uint128", MAX_MUTANT_CHANGE);
       strncpy(replacement, "uint8", MAX_MUTANT_CHANGE);
-			break;
-		case 73: /*change variables types */
+      break;
+    case 73: /*change variables types */
       strncpy(original, "unfixed", MAX_MUTANT_CHANGE);
       strncpy(replacement, "fixed", MAX_MUTANT_CHANGE);
-			break;
-		case 74: /*change variables types */
+      break;
+    case 74: /*change variables types */
       strncpy(original, "fixed", MAX_MUTANT_CHANGE);
       strncpy(replacement, "dynamic", MAX_MUTANT_CHANGE);
-			break;
-		case 75:
+      break;
+    case 75:
       strncpy(original, "address", MAX_MUTANT_CHANGE);
       strncpy(replacement, "address payable", MAX_MUTANT_CHANGE);
       break; 
-		case 76:
+    case 76:
       strncpy(original, "call", MAX_MUTANT_CHANGE);
       strncpy(replacement, "staticcall", MAX_MUTANT_CHANGE);
       break;
-		case 77:
+    case 77:
       strncpy(original, "call", MAX_MUTANT_CHANGE);
       strncpy(replacement, "delegatecall", MAX_MUTANT_CHANGE);
       break;
-		case 78: /*mapping is cheaper than array*/
+    case 78: /*mapping is cheaper than array*/
       strncpy(original, "mapping", MAX_MUTANT_CHANGE);
       strncpy(replacement, "array", MAX_MUTANT_CHANGE);
       break;
-		case 79:
+    case 79:
       strncpy(original, "byte32", MAX_MUTANT_CHANGE);
       strncpy(replacement, "byte1", MAX_MUTANT_CHANGE);
       break; 
-		case 80:
+    case 80:
       strncpy(original, "to", MAX_MUTANT_CHANGE);
       strncpy(replacement, "from", MAX_MUTANT_CHANGE);
       break;
-		case 81:
+    case 81:
       strncpy(original, "gas()", MAX_MUTANT_CHANGE);
       strncpy(replacement, "gas(10000000000000)", MAX_MUTANT_CHANGE);
       break;
-		case 82: /*make an array zero storage*/
+    case 82: /*make an array zero storage*/
       strncpy(original, "[]", MAX_MUTANT_CHANGE);
       strncpy(replacement, "[0000000]", MAX_MUTANT_CHANGE);
       break;
-		case 83:
+    case 83:
       strncpy(original, "return", MAX_MUTANT_CHANGE);
       strncpy(replacement, "return 0", MAX_MUTANT_CHANGE);
       break;
-		case 84:
+    case 84:
       strncpy(original, "storage", MAX_MUTANT_CHANGE);
       strncpy(replacement, "memory", MAX_MUTANT_CHANGE);
       break;
-		case 85:
+    case 85:
       strncpy(original, "storage", MAX_MUTANT_CHANGE);
       strncpy(replacement, "stack", MAX_MUTANT_CHANGE);
       break;
-		case 86: /*make some interesting swaps */
+    case 86: /*make some interesting swaps */
       delim_swap(out_buf, temp_len, &original, &replacement, pos, "uint", "[]", "[20000]");
       break;
-		case 87: /*attach many elements at the end of the dynamic storage arrays */
+    case 87: /*attach many elements at the end of the dynamic storage arrays */
       strncpy(original, "length", MAX_MUTANT_CHANGE);
       strncpy(replacement, "push", MAX_MUTANT_CHANGE);
       break;
-		case 88:
+    case 88:
       strncpy(original, "pop", MAX_MUTANT_CHANGE);
       strncpy(replacement, "push", MAX_MUTANT_CHANGE);
       break;
-		case 89:
+    case 89:
       strncpy(original, "_KeyType", MAX_MUTANT_CHANGE);
       strncpy(replacement, "_ValueType", MAX_MUTANT_CHANGE);
       break;
-		case 90: /* Inline Assembly */
+    case 90: /* Inline Assembly */
       strncpy(original, "assembly", MAX_MUTANT_CHANGE);
       strncpy(replacement, "{", MAX_MUTANT_CHANGE);
       break;
-		case 91:
+    case 91:
       delim_delete(out_buf, temp_len, &original, &replacement, pos, "(", " ", ")");
       break;
-		case 92: /* Duplicate a single line of code */
+    case 92: /* Duplicate a single line of code */
       delim_delete(out_buf, temp_len, &original, &replacement, pos, "[", " ", "]");
       break;
-		case 93: /* Duplicate a single line of code */
+    case 93: /* Duplicate a single line of code */
       delim_delete(out_buf, temp_len, &original, &replacement, pos, "{", " ", "}");
       break;
-		case 94: /* Remove a semicolon delimited statement after a left curly brace */
+    case 94: /* Remove a semicolon delimited statement after a left curly brace */
       delim_delete(out_buf, temp_len, &original, &replacement, pos, "}", ";", "}");
       break;
     case 95: /* Remove a curly brace construct */
       delim_delete(out_buf, temp_len, &original, &replacement, pos, "{", "}", "");
       break;
-		case 96: /* Swap space delimited things case 3 */
+    case 96: /* Swap space delimited things case 3 */
       delim_delete(out_buf, temp_len, &original, &replacement, pos, "(", "0", " ");
       break;
-		case 97: /* Swap space delimited things case 3 */
+    case 97: /* Swap space delimited things case 3 */
       delim_delete(out_buf, temp_len, &original, &replacement, pos, "f", "(", ")");
       break;
-		case 98: /* Swap space delimited things case 3 */
+    case 98: /* Swap space delimited things case 3 */
       delim_delete(out_buf, temp_len, &original, &replacement, pos, " ' ' ", " ", " ' ' ");
       break;
-		case 99: /* Swap space delimited things case 3 */
+    case 99: /* Swap space delimited things case 3 */
       delim_delete(out_buf, temp_len, &original, &replacement, pos, "_", "a", ".");
       break;
-		case 100: /* Swap space delimited things case 1 */
+    case 100: /* Swap space delimited things case 1 */
       delim_swap(out_buf, temp_len, &original, &replacement, pos, "not", "(", " ");
       break;
-		case 101: /* Swap space delimited things case 1 */
+    case 101: /* Swap space delimited things case 1 */
       delim_swap(out_buf, temp_len, &original, &replacement, pos, "iszero", "(", " ");
       break;
     }
@@ -5545,7 +5545,7 @@ static int use_mutation_tool(u8 **out_buf, s32* temp_len) {
   memcpy(new_buf, *out_buf, oplen);
   memcpy(new_buf + oplen, replacement, replacement_len);
   memcpy(new_buf + oplen + replacement_len, opos + original_len,
-	 *temp_len - (oplen + original_len));
+   *temp_len - (oplen + original_len));
   ck_free(*out_buf);
   (*out_buf) = new_buf;
   (*temp_len) = mutant_size;
@@ -6529,9 +6529,9 @@ skip_interest:
     cur_byte= *(u8*)(out_buf + i);
     next_byte= *(u8*)(out_buf + k);
     while(k<len && ( isalpha(cur_byte)||isdigit(cur_byte) )&&( isalpha(next_byte)||isdigit(next_byte) )){
-	   stage_max-=extras_cnt;
-	   k++;
-	   next_byte= *(u8*)(out_buf + k);
+     stage_max-=extras_cnt;
+     k++;
+     next_byte= *(u8*)(out_buf + k);
     }
 
     for (j = 0; j < extras_cnt; j++) {
@@ -6595,9 +6595,9 @@ skip_interest:
     cur_byte= *(u8*)(out_buf + i);
     next_byte= *(u8*)(out_buf + k);
     while(k<len && ( isalpha(cur_byte)||isdigit(cur_byte) )&&( isalpha(next_byte)||isdigit(next_byte) )){
-	    stage_max-=extras_cnt;
-	    k++;
-	    next_byte= *(u8*)(out_buf + k);
+      stage_max-=extras_cnt;
+      k++;
+      next_byte= *(u8*)(out_buf + k);
     }
 
     for (j = 0; j < extras_cnt; j++) {
@@ -6657,9 +6657,9 @@ skip_user_extras:
     cur_byte= *(u8*)(out_buf + i);
     next_byte= *(u8*)(out_buf + k);
     while(k<len && ( isalpha(cur_byte)||isdigit(cur_byte) )&&( isalpha(next_byte)||isdigit(next_byte) )){
-	   stage_max-=MIN(a_extras_cnt, USE_AUTO_EXTRAS);
-	   k++;
-	   next_byte= *(u8*)(out_buf + k);
+     stage_max-=MIN(a_extras_cnt, USE_AUTO_EXTRAS);
+     k++;
+     next_byte= *(u8*)(out_buf + k);
     }
 
     for (j = 0; j < MIN(a_extras_cnt, USE_AUTO_EXTRAS); j++) {
@@ -8072,18 +8072,18 @@ static void save_cmdline(u32 argc, char** argv) {
 /* Main entry point */
 
 int main(int argc, char** argv) {
-	const rlim_t kStackSize=64L*1024L*1024L;
-	struct rlimit rl;
-	int result=getrlimit(RLIMIT_STACK,&rl);
-	if(result==0){
-		if(rl.rlim_cur<kStackSize){
-			rl.rlim_cur=kStackSize;
-			result=setrlimit(RLIMIT_STACK,&rl);
-			if(result!=0){
-				FATAL("setrlimit returned result != 0.\n");
-			}
-		}
-	}
+  const rlim_t kStackSize=64L*1024L*1024L;
+  struct rlimit rl;
+  int result=getrlimit(RLIMIT_STACK,&rl);
+  if(result==0){
+    if(rl.rlim_cur<kStackSize){
+      rl.rlim_cur=kStackSize;
+      result=setrlimit(RLIMIT_STACK,&rl);
+      if(result!=0){
+        FATAL("setrlimit returned result != 0.\n");
+      }
+    }
+  }
 
   s32 opt;
   u64 prev_queued = 0;
