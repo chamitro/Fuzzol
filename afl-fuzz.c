@@ -5126,6 +5126,40 @@ static void delim_delete(u8 **out_buf, s32* temp_len, char **original, char**rep
   }
 }
 
+void mutateSolidity(char *solidityCode) {
+		const char *operators[] = {"+", "-", "*", "/", "**"};
+		const char *statements[] = {"while", "for"};
+		int i, n, j;
+   	time_t t;
+   
+   	/* Intializes random number generator */
+   	srand((unsigned) time(&t));
+    // Search and replace "+" with "*"
+    j = rand() % 5;
+    char *mutationPoint = strstr(solidityCode, operators[j]);
+    while (mutationPoint != NULL) {
+    		i = rand() % 5;
+    		printf("%d\n",i);
+        strncpy(mutationPoint, operators[i], 1);
+        mutationPoint = strstr(solidityCode, "+");
+    }
+}
+
+void writeSolidity(const char *solidityCode, const char *outputFilename) {
+    // Create a new Solidity file
+    FILE *outputFile = fopen(outputFilename, "w");
+    if (!outputFile) {
+        perror("Error creating Solidity file");
+        exit(EXIT_FAILURE);
+    }
+
+    // Write Solidity code
+    fprintf(outputFile, "%s", solidityCode);
+
+    // Close the Solidity file
+    fclose(outputFile);
+}
+
 static int use_mutation_tool(u8 **out_buf, s32* temp_len) {
   /* Returns 1 if a mutant was generated and placed in out_buf, 0 if none generated. */
 
@@ -5140,13 +5174,15 @@ static int use_mutation_tool(u8 **out_buf, s32* temp_len) {
   /* Above defaults are to handle when sdels fail */
   char* opos;
   size_t pos;
+  char mutatedSolidity[128 * 1024];  // Adjust the buffer size as needed
   for (size_t i = 0; i < MAX_MUTANT_TRIES; i++) {
     pos = UR((*temp_len) - 1);
     int choice = UR(101);
     switch (choice) {
     case 0: /* Operator, Statement and Data Type Change */
-      strncpy(original, "\n", MAX_MUTANT_CHANGE);
-      strncpy(replacement, "\nif (0==1)\n", MAX_MUTANT_CHANGE);
+    	strcpy(mutatedSolidity, original);
+    	mutateSolidity(mutatedSolidity);
+    	strcpy(replacement, mutatedSolidity);
       break;
     case 1:
       strncpy(original, "(", MAX_MUTANT_CHANGE);
