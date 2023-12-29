@@ -5145,6 +5145,64 @@ void mutateSolidity(char *solidityCode) {
     }
 }
 
+const char *types[] = {"uint", "string", "bool", "int", "fixed", "unfixed", "address", "bytes", "bytes[]", "uint[]"};
+
+int getRandomTypeIndex() {
+    return rand() % (sizeof(types) / sizeof(types[0]));
+}
+
+void replaceRandomType(char *solidityCode) {
+    char *result = malloc(strlen(solidityCode) * 2);
+
+    if (result == NULL) {
+        fprintf(stderr, "Memory allocation failed.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    char *ptr = solidityCode;
+    char *resPtr = result;
+
+    while (*ptr != '\0') {
+        // Copy non-alphabetic characters
+        while (*ptr != '\0' && !isalpha(*ptr)) {
+            *resPtr++ = *ptr++;
+        }
+
+        if (*ptr != '\0' && isalpha(*ptr)) {
+            // Check if the current word is a data type
+            int matchedType = 0;
+            for (int i = 0; i < sizeof(types) / sizeof(types[0]); ++i) {
+                if (strncmp(ptr, types[i], strlen(types[i])) == 0 && !isalnum(*(ptr + strlen(types[i])))) {
+                    // Replace the data type with a random data type
+                    const char *randomType = types[getRandomTypeIndex()];
+                    while (*randomType != '\0') {
+                        *resPtr++ = *randomType++;
+                    }
+                    ptr += strlen(types[i]);
+                    matchedType = 1;
+                    break;
+                }
+            }
+
+            // If not a data type, copy the current word as is
+            if (!matchedType) {
+                while (*ptr != '\0' && isalnum(*ptr)) {
+                    *resPtr++ = *ptr++;
+                }
+            }
+        }
+    }
+
+    // Null-terminate the result string
+    *resPtr = '\0';
+
+    // Print the modified Solidity code
+    printf("Modified Solidity Code:\n%s\n", result);
+
+    // Free the allocated memory
+    free(result);
+}
+
 void writeSolidity(const char *solidityCode, const char *outputFilename) {
     // Create a new Solidity file
     FILE *outputFile = fopen(outputFilename, "w");
@@ -5175,6 +5233,9 @@ static int use_mutation_tool(u8 **out_buf, s32* temp_len) {
   char* opos;
   size_t pos;
   char mutatedSolidity[128 * 1024];  // Adjust the buffer size as needed
+  char solidityCode[128 * 1024]; //data types chage
+  // Seed the random number generator with the current time
+  srand(time(NULL));
   for (size_t i = 0; i < MAX_MUTANT_TRIES; i++) {
     pos = UR((*temp_len) - 1);
     int choice = UR(101);
@@ -5185,8 +5246,9 @@ static int use_mutation_tool(u8 **out_buf, s32* temp_len) {
     	strcpy(replacement, mutatedSolidity);
       break;
     case 1:
-      strncpy(original, "(", MAX_MUTANT_CHANGE);
-      strncpy(replacement, "(!", MAX_MUTANT_CHANGE);
+      strcpy(solidityCode, original);
+    	replaceRandomType(solidityCode);
+    	strcpy(replacement, solidityCode);
       break;
     case 2:
       strncpy(original, "==", MAX_MUTANT_CHANGE);
