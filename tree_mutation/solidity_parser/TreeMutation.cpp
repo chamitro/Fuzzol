@@ -123,7 +123,7 @@ int main(){
   	ifstream in;
 	char target[100*1024];
 	int len=0;
-  	in.open("/home/b/Superion/tree_mutation/solidity_parser/test3.sol");
+  	in.open("/home/b/Fuzzol/tree_mutation/solidity_parser/test3.sol");
 	while(!in.eof()){
 		in.read(target,102400);
 	}
@@ -134,7 +134,7 @@ int main(){
 
 	char second[100*1024];
 	int lenS=0;
-  	in.open("/home/b/Superion/tree_mutation/solidity_parser/test2.sol");
+  	in.open("/home/b/Fuzzol/tree_mutation/solidity_parser/test2.sol");
 	while(!in.eof()){
 		in.read(second,102400);
 	}
@@ -151,4 +151,3 @@ int main(){
   	}
   	cout<<"num_of_smaples:"<<num_of_smaples<<endl;
 }
-
