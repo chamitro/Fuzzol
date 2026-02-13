@@ -136,7 +136,7 @@ The mutation strategy prioritization algorithm enables FUZZOL to generate unique
 If you use FUZZOL in your research, please cite:
 
 ```bibtex
-@inproceedings{mitropoulos2023fuzzol,
+@inproceedings{MSIM2023fuzzol,
   title={Syntax-Aware Mutation for Testing the Solidity Compiler},
   author={Mitropoulos, Charalambos and Sotiropoulos, Thodoris and 
           Ioannidis, Sotiris and Mitropoulos, Dimitris},
