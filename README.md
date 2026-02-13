@@ -130,22 +130,6 @@ Compared to state-of-the-art fuzzers (48-hour campaigns):
 
 The mutation strategy prioritization algorithm enables FUZZOL to generate unique test cases approximately **24 hours faster** than baseline approaches.
 
-## Project Structure
-
-```
-fuzzol/
-├── afl-fuzz.c          # Main fuzzer with prioritization algorithm
-├── afl-gcc.c           # Compiler wrapper
-├── mutations/
-│   ├── syntax_aware.c  # Syntax-aware mutation strategies
-│   ├── ast_leaf.c      # AST leaf node change
-│   └── inline_asm.c    # Inline assembly mutations
-├── grammar/
-│   └── Solidity.g4     # ANTLR4 grammar for Solidity
-├── seeds/              # Example seed files
-└── docs/
-    └── paper.pdf       # Research paper
-```
 
 ## Citation
 
